@@ -1,9 +1,12 @@
 import { ChakraProvider } from '@chakra-ui/react'
-import { VersionsInfo } from './components/VersionsInfo/VersionsInfo';
 import theme from './theme';
+import NavBar from './components/NavBar/NavBar';
+import { IPCStatusProvider } from './components/IPCStatusProvider/IPCStatusProvider';
 
 export const App = () => {
     return <ChakraProvider theme={theme}>
-        <VersionsInfo />
+        <IPCStatusProvider>
+            <NavBar />
+        </IPCStatusProvider>
     </ChakraProvider>;
 }

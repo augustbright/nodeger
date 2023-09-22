@@ -3,3 +3,7 @@ declare const versions: {
     chrome: () => string;
     electron: () => string;
 };
+
+declare const api: {
+    ping: () => Promise<string>;
+};
