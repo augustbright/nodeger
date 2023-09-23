@@ -2,7 +2,7 @@ import { Divider, Stack, Text } from "@chakra-ui/react";
 import { useIPCStatus } from "../../hooks/useIPCStatus";
 
 export const VersionsInfo = () => {
-    const ipcOk = useIPCStatus();
+    const {service: ipcOk} = useIPCStatus();
     return (
         <Stack spacing={1} p={"2"}>
             {ipcOk && <Text fontSize='md' color={"green"} fontWeight={"bold"}>Service is responding</Text> }

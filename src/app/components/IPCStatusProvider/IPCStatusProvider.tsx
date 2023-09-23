@@ -1,20 +1,52 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { checkIPCStatus } from "../../func/checkIPCStatus";
 
-export const IPCStatusContext = createContext<boolean | null>(null);
+type TContextValue = {
+    service: boolean | null;
+    nvm: {
+        version?: string;
+        error?: string;
+    } | null;
+    reloadNVM: () => void;
+};
 
-const IPC_POLLING_INTERVAL = 1000;
+export const IPCStatusContext = createContext<TContextValue>({
+    nvm: undefined,
+    service: undefined,
+    reloadNVM: () => undefined
+});
+
+const IPC_POLLING_INTERVAL = 10000;
 
 export const IPCStatusProvider = ({ children }: { children: React.ReactNode }) => {
-    const [ok, setOk] = useState<boolean | null>(null);
+    const [service, setService] = useState<TContextValue['service']>(null);
+    const [nvm, setNVM] = useState<TContextValue['nvm']>(null);
+
+    const reloadNVM = useCallback(async () => {
+        setNVM(null);
+        const response = await api.nvmVersion();
+        setNVM({
+            version: response.result,
+            error: response.error
+        });
+    }, [setNVM]);
+
     useEffect(() => {
         const interval = setInterval(async () => {
-            setOk(await checkIPCStatus());
+            setService(await checkIPCStatus());
         }, IPC_POLLING_INTERVAL);
         return () => {
             clearInterval(interval);
         };
     }, []);
 
-    return <IPCStatusContext.Provider value={ok}>{children}</IPCStatusContext.Provider>;
+    useEffect(() => {
+        reloadNVM();
+    }, []);
+
+    return <IPCStatusContext.Provider value={{
+        service,
+        nvm,
+        reloadNVM
+    }}>{children}</IPCStatusContext.Provider>;
 };

@@ -1,5 +1,3 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 import { contextBridge, ipcRenderer } from 'electron';
 
 contextBridge.exposeInMainWorld('versions', {
@@ -9,5 +7,11 @@ contextBridge.exposeInMainWorld('versions', {
 });
 
 contextBridge.exposeInMainWorld('api', {
-    ping: () => ipcRenderer.invoke('ping')
+    ping: () => ipcRenderer.invoke('ping'),
+    settings: {
+        get: () => ipcRenderer.invoke('get-settings'),
+        set: (settings: TSettings) => ipcRenderer.invoke('set-settings', settings),
+        validate: (settings: TSettings) => ipcRenderer.invoke('validate-settings', settings),    
+    },
+    nvmVersion: () => ipcRenderer.invoke('nvm-version'),
 });
