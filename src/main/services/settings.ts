@@ -5,6 +5,7 @@ import { filterTruthy } from '../func/filterTruthy';
 export const getSettings = async (): Promise<TSettings> => {
     return {
         nvmPath: await storage.getItem('nvmPath'),
+        debugMode: await storage.getItem('debugMode'),
     };
 };
 

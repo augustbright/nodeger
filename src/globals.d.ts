@@ -22,10 +22,13 @@ declare const versions: {
 };
 
 declare const api: {
-    ping: () => Promise<string>;
+    debug: {
+        ping: () => Promise<string>;
+    };
     settings: {
         get: () => Promise<{
             nvmPath: string;
+            debugMode: boolean;
         }>;
         set: (settings: TSettings) => Promise<TInvokeResponse>;
         validate: (settings: TSettings) => Promise<TSettingsValidation>;

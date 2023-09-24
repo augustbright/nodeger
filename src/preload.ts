@@ -8,11 +8,13 @@ contextBridge.exposeInMainWorld('versions', {
 });
 
 contextBridge.exposeInMainWorld('api', {
-    ping: () => ipcRenderer.invoke(API.PING),
+    debug: {
+        ping: () => ipcRenderer.invoke(API.PING)
+    },
     settings: {
         get: () => ipcRenderer.invoke(API.SETTINGS.GET),
         set: (settings: TSettings) => ipcRenderer.invoke(API.SETTINGS.SET, settings),
-        validate: (settings: TSettings) => ipcRenderer.invoke(API.SETTINGS.VALIDATE, settings),        
+        validate: (settings: TSettings) => ipcRenderer.invoke(API.SETTINGS.VALIDATE, settings),
     },
     nvm: {
         lsLocal: () => ipcRenderer.invoke(API.NVM.LS_LOCAL),

@@ -1,8 +1,9 @@
-import { Button, Divider, Flex, IconButton, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react";
+import { Button, Divider, Flex, Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
 import { Page } from "../../components/Page/Page";
 import { ArrowLeftIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router";
 import { GeneralSettings } from "../../components/GeneralSettings/GeneralSettings";
+import { About } from "../../components/About/About";
 
 export const SettingsPage = () => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ export const SettingsPage = () => {
                         <GeneralSettings />
                     </TabPanel>
                     <TabPanel>
-                        <p>about</p>
+                        <About />
                     </TabPanel>
                 </TabPanels>
             </Tabs>
