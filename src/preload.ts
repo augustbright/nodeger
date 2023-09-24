@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
+import { API } from './shared/const';
 
 contextBridge.exposeInMainWorld('versions', {
     node: () => process.versions.node,
@@ -7,11 +8,15 @@ contextBridge.exposeInMainWorld('versions', {
 });
 
 contextBridge.exposeInMainWorld('api', {
-    ping: () => ipcRenderer.invoke('ping'),
+    ping: () => ipcRenderer.invoke(API.PING),
     settings: {
-        get: () => ipcRenderer.invoke('get-settings'),
-        set: (settings: TSettings) => ipcRenderer.invoke('set-settings', settings),
-        validate: (settings: TSettings) => ipcRenderer.invoke('validate-settings', settings),    
+        get: () => ipcRenderer.invoke(API.SETTINGS.GET),
+        set: (settings: TSettings) => ipcRenderer.invoke(API.SETTINGS.SET, settings),
+        validate: (settings: TSettings) => ipcRenderer.invoke(API.SETTINGS.VALIDATE, settings),        
     },
-    nvmVersion: () => ipcRenderer.invoke('nvm-version'),
-});
+    nvm: {
+        lsLocal: () => ipcRenderer.invoke(API.NVM.LS_LOCAL),
+        version: () => ipcRenderer.invoke(API.NVM.VERSION),
+        use: (version: string) => ipcRenderer.invoke(API.NVM.USE, version),
+    },
+} as typeof api);

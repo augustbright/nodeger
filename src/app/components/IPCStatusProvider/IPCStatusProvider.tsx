@@ -11,8 +11,8 @@ type TContextValue = {
 };
 
 export const IPCStatusContext = createContext<TContextValue>({
-    nvm: undefined,
-    service: undefined,
+    nvm: null,
+    service: null,
     reloadNVM: () => undefined
 });
 
@@ -24,7 +24,7 @@ export const IPCStatusProvider = ({ children }: { children: React.ReactNode }) =
 
     const reloadNVM = useCallback(async () => {
         setNVM(null);
-        const response = await api.nvmVersion();
+        const response = await api.nvm.version();
         setNVM({
             version: response.result,
             error: response.error

@@ -4,6 +4,12 @@ declare type TSettingsValidation = Partial<{
     [key in keyof TSettings]: string;
 }>;
 
+declare type TNodeVersion = {
+    id: string;
+    aliases: string[];
+    current: boolean;
+};
+
 declare type TInvokeResponse<T = string> = {
     error?: string;
     result?: T;
@@ -24,5 +30,9 @@ declare const api: {
         set: (settings: TSettings) => Promise<TInvokeResponse>;
         validate: (settings: TSettings) => Promise<TSettingsValidation>;
     };
-    nvmVersion: () => Promise<TInvokeResponse>;
+    nvm: {
+        lsLocal: () => Promise<TInvokeResponse<TNodeVersion[]>>;
+        version: () => Promise<TInvokeResponse>;
+        use: (version: string) => Promise<TInvokeResponse>;
+    };    
 };

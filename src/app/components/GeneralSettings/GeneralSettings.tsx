@@ -37,7 +37,7 @@ export const GeneralSettings = () => {
         >
             {(props) => (
                 <Form>
-                    <FormControl isInvalid={props.errors.nvmPath && props.touched.nvmPath}>
+                    <FormControl isInvalid={!!props.errors.nvmPath && !!props.touched.nvmPath}>
                         <FormLabel>NVM path</FormLabel>
                         <InputGroup>
                             <Input {...props.getFieldProps('nvmPath')} type='text' />

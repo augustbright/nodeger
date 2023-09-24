@@ -24,7 +24,10 @@ export const setSettings = async (settings: TSettings) => {
         await Promise.all(promises);
         return {};    
     } catch (error) {
-        return { error: error.message };
+        if (error instanceof Error) {
+            return { error: error.message };
+        }
+        return { error: 'Unknown error.' };
     }
 };
 

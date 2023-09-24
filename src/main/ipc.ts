@@ -1,11 +1,14 @@
 import { ipcMain } from "electron";
-import { nvm } from "./services/nvm";
+import { getLocalNodeVersions, nvm } from "./services/nvm";
 import { getSettings, setSettings, validateSettings } from "./services/settings";
+import { API } from "../shared/const";
 
 export const initIPC = () => {
-    ipcMain.handle('ping', () => 'pong');
-    ipcMain.handle('nvm-version', () => nvm('--version'));
-    ipcMain.handle('get-settings', () => getSettings());
-    ipcMain.handle('set-settings', (_event, settings) => setSettings(settings));
-    ipcMain.handle('validate-settings', (_event, settings) => validateSettings(settings));
+    ipcMain.handle(API.PING, () => 'pong');
+    ipcMain.handle(API.NVM.VERSION, () => nvm('--version'));
+    ipcMain.handle(API.NVM.LS_LOCAL, () => getLocalNodeVersions());
+    ipcMain.handle(API.NVM.USE, (_event, version) => nvm(`use ${version}`));
+    ipcMain.handle(API.SETTINGS.GET, () => getSettings());
+    ipcMain.handle(API.SETTINGS.SET, (_event, settings) => setSettings(settings));
+    ipcMain.handle(API.SETTINGS.VALIDATE, (_event, settings) => validateSettings(settings));
 };
