@@ -6,11 +6,14 @@ import { IPCStatusProvider } from './components/IPCStatusProvider/IPCStatusProvi
 import { ContentSwitch } from './components/ContentSwitch/ContentSwitch';
 import { Footer } from './components/Footer/Footer';
 import { SettingsProvider } from './components/SettingsProvider/SettingsProvider';
-import { ToastContainer } from 'react-toastify';
 
 export const App = () => {
     return <MemoryRouter>
-        <ChakraProvider theme={theme}>
+        <ChakraProvider theme={theme} toastOptions={{
+            defaultOptions: {
+                position: 'bottom-left'
+            }
+        }}>
             <SettingsProvider>
                 <IPCStatusProvider>
                     <Stack direction={'column'} h={'100vh'}>
@@ -18,18 +21,6 @@ export const App = () => {
                         <Box flexGrow={1}>
                             <ContentSwitch />
                         </Box>
-                        <ToastContainer
-                            position="bottom-left"
-                            autoClose={5000}
-                            hideProgressBar={true}
-                            newestOnTop={false}
-                            closeOnClick
-                            rtl={false}
-                            pauseOnFocusLoss
-                            draggable
-                            pauseOnHover
-                            theme="dark"
-                        />
                         <Footer />
                     </Stack>
                 </IPCStatusProvider>

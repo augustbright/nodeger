@@ -1,26 +1,34 @@
 import { CheckIcon, WarningIcon } from "@chakra-ui/icons";
-import { Button, Code, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputRightElement } from "@chakra-ui/react";
+import { Button, Code, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, InputGroup, InputRightElement, useToast } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
 import { useSettings } from "../../hooks/useSettings";
-import { toast } from "react-toastify";
 import { useIPCStatus } from "../../hooks/useIPCStatus";
 
 export const GeneralSettings = () => {
-    const {settings, reloadSettings} = useSettings();
+    const { settings, reloadSettings } = useSettings();
     const { reloadNVM } = useIPCStatus();
+    const toast = useToast();
     return (
         <Formik<TSettings>
             initialValues={settings}
             onSubmit={(values, actions) => {
                 api.settings.set(values).then((response) => {
                     if (response.error) {
-                        toast.error(response.error);
+                        toast({
+                            description: response.error,
+                            status: 'error',
+                            title: 'Error saving settings'
+                        });
                     } else {
-                        toast.success('Settings saved');
+                        toast({
+                            description: 'Settings saved',
+                            status: 'success',
+                        });
                     }
                     reloadNVM();
                     reloadSettings();
                     actions.setSubmitting(false);
+                    actions.resetForm({ values });
                 })
             }}
             validateOnMount
