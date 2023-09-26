@@ -43,24 +43,32 @@ export const GeneralSettings = () => {
             {(props) => (
                 <Form>
                     <Flex direction='column' gap={4}>
-                        <FormControl isInvalid={!!props.errors.nvmPath && !!props.touched.nvmPath}>
-                            <FormLabel>NVM path</FormLabel>
+                        <FormControl isInvalid={!!props.errors.shell && !!props.touched.shell}>
+                            <FormLabel>Shell environment</FormLabel>
                             <InputGroup>
-                                <Input {...props.getFieldProps('nvmPath')} type='text' />
-                                {!props.isSubmitting && props.values.nvmPath && !props.errors.nvmPath && (
+                                <Input {...props.getFieldProps('shell')} type='text' />
+                                {!props.isSubmitting && props.values.shell && !props.errors.shell && (
                                     <InputRightElement>
                                         <CheckIcon color='green.500' />
                                     </InputRightElement>
                                 )}
+                            </InputGroup>
+                            <FormErrorMessage>{props.errors.shell}</FormErrorMessage>
+                            <FormHelperText>Path to the shell environment, e.g. <Code>/bin/zsh</Code></FormHelperText>
+                        </FormControl>
 
-                                {!props.isSubmitting && props.values.nvmPath && props.errors.nvmPath && (
+                        <FormControl isInvalid={!!props.errors.shellContext && !!props.touched.shellContext}>
+                            <FormLabel>Shell context</FormLabel>
+                            <InputGroup>
+                                <Input {...props.getFieldProps('shellContext')} type='text' />
+                                {!props.isSubmitting && props.values.shellContext && !props.errors.shellContext && (
                                     <InputRightElement>
-                                        <WarningIcon color='red.500' />
+                                        <CheckIcon color='green.500' />
                                     </InputRightElement>
                                 )}
                             </InputGroup>
-                            <FormErrorMessage>{props.errors.nvmPath}</FormErrorMessage>
-                            <FormHelperText>Path to the nvm shell script, e.g. <Code>/Users/username/.nvm/nvm.sh</Code></FormHelperText>
+                            <FormErrorMessage>{props.errors.shellContext}</FormErrorMessage>
+                            <FormHelperText>Path to shell context, e.g. <Code>~/.zshrc</Code></FormHelperText>
                         </FormControl>
 
                         <FormControl display='flex' alignItems='center'>

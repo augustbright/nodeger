@@ -1,19 +1,33 @@
-declare type TSettings = Awaited<ReturnType<typeof api.settings.get>>;
+type TSettings = Awaited<ReturnType<typeof api.settings.get>>;
 
-declare type TSettingsValidation = Partial<{
+type TSettingsValidation = Partial<{
     [key in keyof TSettings]: string;
 }>;
 
-declare type TNodeVersion = {
+type TNodeVersion = {
     id: string;
     aliases: string[];
     current: boolean;
 };
 
-declare type TInvokeResponse<T = string> = {
+type TInvokeResponse<T = string> = {
     error?: string;
     result?: T;
 };
+
+type TOutput = {
+    type: 'info' | 'error';
+    message: string;
+    pid: number | undefined;
+    timestamp: number;
+    command: string;
+};
+
+type TLogMessage = {
+    type: 'info' | 'error';
+    message: string;
+    timestamp: number;
+}
 
 declare const versions: {
     node: () => string;
@@ -28,6 +42,8 @@ declare const api: {
     settings: {
         get: () => Promise<{
             nvmPath: string;
+            shell: string;
+            shellContext: string;
             debugMode: boolean;
         }>;
         set: (settings: TSettings) => Promise<TInvokeResponse>;
@@ -37,5 +53,7 @@ declare const api: {
         lsLocal: () => Promise<TInvokeResponse<TNodeVersion[]>>;
         version: () => Promise<TInvokeResponse>;
         use: (version: string) => Promise<TInvokeResponse>;
-    };    
+    };
+    onOutput: (listener: (output: TOutput) => void) => void;
+    onLog: (listener: (log: TLogMessage) => void) => void;
 };

@@ -1,42 +1,48 @@
 import { exec } from 'child_process';
 import fs from 'fs';
+import { resolve as pathResolve } from 'path';
 import { getSettings } from './settings';
+import { sendOutput } from './output';
+import { promisify } from 'util';
 
-export const validateNVMPath = async (path: string): Promise<string | undefined> => {
+const stat = promisify(fs.stat);
+
+export const validatePathToFile = async (path: string): Promise<void> => {
     if (!path) return undefined;
 
-    return new Promise((resolve) => {
-        fs.stat(path, async (err, stats) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    resolve(`File does not exist.`)
-                    return;
-                }
-                resolve(err.message);
-                return;
-            }
+    const stats = await stat(pathResolve(path))
 
-            if (stats.isDirectory()) {
-                resolve(`Path is a directory.`);
-                return;
-            }
+    if (stats.isDirectory()) {
+        throw new Error(`Path is a directory.`);
+    }
 
-            if (!stats.isFile()) {
-                resolve(`Path is not a file.`);
-                return;
-            }
-
-            const result = await nvm('--version', path);
-
-            if (result.error) {
-                resolve(result.error);
-                return;
-            }
-
-            resolve(undefined);
-        });
-    });
+    if (!stats.isFile()) {
+        throw new Error(`Path is not a file.`);
+    }
 };
+
+export const validateNVMPath = async (path: string): Promise<void> => {
+    if (!path) return undefined;
+
+    const result = await nvm('--version', path);
+    if (result.error) {
+        throw new Error(`Path is not a valid NVM installation.`);
+    }
+}
+
+/**
+ * invokes callback and returns error message as string if any error is thrown
+ */
+export const invokeWithError = async (callback: () => Promise<void>): Promise<string | undefined> => {
+    try {
+        await callback();
+    } catch (error) {
+        if (error instanceof Error) {
+            return error.message;
+        }
+        return 'Unknown error.';
+    }
+}
 
 const parsePlainVersions = (versions: string): string[] =>
     versions
@@ -87,33 +93,47 @@ export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TNodeVersi
     }
 }
 
-export const useNodeVersion = async (version: string): Promise<TInvokeResponse> => {
-    const response = await nvm(`use ${version}`);
-    if (response.error) return { error: response.error };
-
-    return {};
-};
-
 export const nvm = async (params: string, customPath?: string): Promise<TInvokeResponse> => {
-    const path = customPath ?? (await getSettings()).nvmPath;
+    const { nvmPath, shell, shellContext } = await getSettings();
+    const path = customPath ?? nvmPath;
     if (!path) return { error: 'Path is not set.' };
 
-    const cmd = `[ -s "${path}" ] && . "${path}"; nvm ${params}`;
+    const cmd = `${shellContext ? `source ${shellContext};` : ''} nvm ${params} --no-colors`;
 
     return new Promise<TInvokeResponse>((resolve) => {
         try {
-            exec(cmd, (error, stdout) => {
+            const process = exec(cmd, { shell }, (error, stdout) => {
                 if (error) {
                     resolve({ error: error.message });
+                    sendOutput({
+                        type: 'error',
+                        message: error.message,
+                        pid: process.pid,
+                        command: cmd,
+                    });
                     return;
                 }
                 resolve({ result: stdout });
+                sendOutput({
+                    type: 'info',
+                    message: stdout,
+                    pid: process.pid,
+                    command: cmd,
+                });
             });
         } catch (error) {
+            let message = 'Unknown error.';
             if (error instanceof Error) {
-                return { error: error.message };
+                message = error.message;
+                return { error: message };
             }
-            return { error: 'Unknown error.' };
+            sendOutput({
+                type: 'error',
+                message,
+                pid: undefined,
+                command: cmd,
+            });
+            return { error: message };
         }
     });
 };

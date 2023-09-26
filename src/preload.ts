@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { API } from './shared/const';
+import { API, EVENTS } from './shared/const';
 
 contextBridge.exposeInMainWorld('versions', {
     node: () => process.versions.node,
@@ -20,5 +20,11 @@ contextBridge.exposeInMainWorld('api', {
         lsLocal: () => ipcRenderer.invoke(API.NVM.LS_LOCAL),
         version: () => ipcRenderer.invoke(API.NVM.VERSION),
         use: (version: string) => ipcRenderer.invoke(API.NVM.USE, version),
+    },
+    onOutput: (listener: (output: TOutput) => void) => {
+        ipcRenderer.on(EVENTS.OPUTPUT, (_event, data) => listener(data));
+    },
+    onLog: (listener: (log: TLogMessage) => void) => {
+        ipcRenderer.on(EVENTS.LOG, (_event, data) => listener(data));
     },
 } as typeof api);

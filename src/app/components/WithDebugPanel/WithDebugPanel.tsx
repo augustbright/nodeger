@@ -5,7 +5,7 @@ import * as atoms from "../../atoms";
 import { useSettings } from "../../hooks/useSettings";
 import { Debug } from "../Debug/Debug";
 
-export const DebugProvider = ({ children }: {
+export const WithDebugPanel = ({ children }: {
     children: React.ReactNode
 }) => {
     const [debugActive] = useAtom(atoms.debugActive);

@@ -11,3 +11,8 @@ export const API = {
         VALIDATE: 'validate-settings',
     },
 };
+
+export const EVENTS = {
+    OPUTPUT: 'output',
+    LOG: 'log',
+};

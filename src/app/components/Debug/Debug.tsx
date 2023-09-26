@@ -1,4 +1,6 @@
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@chakra-ui/react";
+import { Output } from "../Output/Output";
+import { Log } from "../Log/Log";
 
 export const Debug = () => {
     return (
@@ -9,10 +11,10 @@ export const Debug = () => {
             </TabList>
             <TabPanels>
                 <TabPanel>
-                    <div>output</div>
+                    <Output />
                 </TabPanel>
                 <TabPanel>
-                    <div>logs</div>
+                    <Log />
                 </TabPanel>
             </TabPanels>
         </Tabs>

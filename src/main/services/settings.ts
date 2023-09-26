@@ -1,10 +1,12 @@
 import storage from 'node-persist';
-import { validateNVMPath } from './nvm';
+import { invokeWithError, validateNVMPath, validatePathToFile } from './nvm';
 import { filterTruthy } from '../func/filterTruthy';
 
 export const getSettings = async (): Promise<TSettings> => {
     return {
         nvmPath: await storage.getItem('nvmPath'),
+        shell: await storage.getItem('shell'),
+        shellContext: await storage.getItem('shellContext'),
         debugMode: await storage.getItem('debugMode'),
     };
 };
@@ -34,6 +36,15 @@ export const setSettings = async (settings: TSettings) => {
 
 export const validateSettings = async (settings: TSettings): Promise<TSettingsValidation> => {
     return filterTruthy({
-        nvmPath: await validateNVMPath(settings.nvmPath),
+        nvmPath: await invokeWithError(async () => {
+            await validatePathToFile(settings.nvmPath);
+            await validateNVMPath(settings.nvmPath);
+        }),
+        shell: await invokeWithError(async () => {
+            await validatePathToFile(settings.shell)
+        }),
+        shellContext: await invokeWithError(async () => {
+            await validatePathToFile(settings.shellContext)
+        }),
     });
 };
