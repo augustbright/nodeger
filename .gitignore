@@ -92,3 +92,4 @@ typings/
 out/
 
 .node-persist
+nvm-ls-remote.txt

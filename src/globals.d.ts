@@ -4,10 +4,24 @@ type TSettingsValidation = Partial<{
     [key in keyof TSettings]: string;
 }>;
 
-type TNodeVersion = {
+type TLocalNodeVersion = {
     id: string;
     aliases: string[];
-    current: boolean;
+};
+
+type TRemoteNodeVersion = {
+    id: string,
+    codename: string | null,
+    latestLTS: boolean,
+};
+
+type TNodeVersion = {
+    id: string;
+    local: boolean;
+    aliases: string[];
+    codename: string | null;
+    latestLTS: boolean;
+    default: boolean;
 };
 
 type TInvokeResponse<T = string> = {
@@ -51,8 +65,11 @@ declare const api: {
     };
     nvm: {
         lsLocal: () => Promise<TInvokeResponse<TNodeVersion[]>>;
+        lsRemote: () => Promise<TInvokeResponse<TNodeVersion[]>>;
         version: () => Promise<TInvokeResponse>;
         use: (version: string) => Promise<TInvokeResponse>;
+        sync: () => Promise<TInvokeResponse>;
+        lastSync: () => Promise<TInvokeResponse<number>>;
     };
     onOutput: (listener: (output: TOutput) => void) => void;
     onLog: (listener: (log: TLogMessage) => void) => void;

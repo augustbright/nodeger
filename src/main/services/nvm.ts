@@ -1,11 +1,15 @@
+import storage from 'node-persist';
 import { exec } from 'child_process';
 import fs from 'fs';
 import { resolve as pathResolve } from 'path';
 import { getSettings } from './settings';
 import { sendOutput } from './output';
 import { promisify } from 'util';
+import { log } from './log';
 
 const stat = promisify(fs.stat);
+const open = promisify(fs.open);
+const read = promisify(fs.read);
 
 export const validatePathToFile = async (path: string): Promise<void> => {
     if (!path) return undefined;
@@ -51,6 +55,24 @@ const parsePlainVersions = (versions: string): string[] =>
         .map(line => line.match(/.*(v\d+\.\d+\.\d+).*/))
         .map((match) => match && match[1] || '')
 
+const parseRemoteVersions = (versions: string): TRemoteNodeVersion[] => {
+    return versions.split('\n')
+        .map(s => s.replace('->', ''))
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map(line => {
+            const matchVersion = line.match(/.*(v\d+\.\d+\.\d+).*/);
+            const matchCodename = line.match(/\(.*LTS:\s+(.*)\)/);
+            const matchLatestLTS = line.match(/Latest LTS/);
+
+            return {
+                id: matchVersion && matchVersion[1] || '',
+                codename: matchCodename && matchCodename[1],
+                latestLTS: !!matchLatestLTS,
+            };
+        });
+}
+
 export const getCurrentNodeVersion = async (): Promise<TInvokeResponse<string>> => {
     //TODO: check if current is set
     try {
@@ -67,12 +89,11 @@ export const getCurrentNodeVersion = async (): Promise<TInvokeResponse<string>> 
     }
 };
 
-export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TNodeVersion[]>> => {
+export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TLocalNodeVersion[]>> => {
     try {
         const versionResponse = await getCurrentNodeVersion();
         if (versionResponse.error) return { error: versionResponse.error };
 
-        const currentVersion = versionResponse.result;
         const response = await nvm('ls --no-alias');
 
         if (response.error) return { error: response.error };
@@ -81,7 +102,6 @@ export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TNodeVersi
         const versions = versionsPlainList.map(version => ({
             id: version,
             aliases: [],
-            current: version === currentVersion,
         }));
 
         return { result: versions };
@@ -91,6 +111,39 @@ export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TNodeVersi
         }
         return { error: 'Unknown error.' };
     }
+}
+
+export const syncRemoteNodeVersions = async (): Promise<TInvokeResponse> => {
+    const result = await nvm('ls-remote --no-colors > nvm-ls-remote.txt');
+    storage.setItem('lastSync', Date.now());
+
+    if (result.error) return { error: result.error };
+    return { result: 'OK' };
+};
+
+export const getLastSync = async (): Promise<TInvokeResponse<number>> => {
+    const lastSync = await storage.getItem('lastSync');
+    return { result: lastSync || 0 };
+}
+
+export const getRemoteNodeVersions = async (): Promise<TInvokeResponse<TRemoteNodeVersion[]>> => {
+    const { result: lastSync } = await getLastSync();
+    if (!lastSync) {
+        return { error: 'No remote versions available. Please sync first.' };
+    }
+
+    try {
+        const file = await open(pathResolve('nvm-ls-remote.txt'), 'r');
+        const data = await read(file);
+        const versions = parseRemoteVersions(data.buffer.toString());
+        return { result: versions };
+    } catch (error) {
+        if (error instanceof Error) {
+            return { error: error.message };
+        }
+        return { error: 'Unknown error.' };
+    }
+
 }
 
 export const nvm = async (params: string, customPath?: string): Promise<TInvokeResponse> => {

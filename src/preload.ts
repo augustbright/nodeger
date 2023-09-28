@@ -18,8 +18,11 @@ contextBridge.exposeInMainWorld('api', {
     },
     nvm: {
         lsLocal: () => ipcRenderer.invoke(API.NVM.LS_LOCAL),
+        lsRemote: () => ipcRenderer.invoke(API.NVM.LS_REMOTE),
         version: () => ipcRenderer.invoke(API.NVM.VERSION),
         use: (version: string) => ipcRenderer.invoke(API.NVM.USE, version),
+        sync: () => ipcRenderer.invoke(API.NVM.SYNC),
+        lastSync: () => ipcRenderer.invoke(API.NVM.LAST_SYNC),
     },
     onOutput: (listener: (output: TOutput) => void) => {
         ipcRenderer.on(EVENTS.OPUTPUT, (_event, data) => listener(data));
