@@ -6,10 +6,16 @@ import { getSettings } from './settings';
 import { sendOutput } from './output';
 import { promisify } from 'util';
 import { log } from './log';
+import { app } from 'electron';
 
 const stat = promisify(fs.stat);
 const open = promisify(fs.open);
+const close = promisify(fs.close);
+const write = promisify(fs.write);
 const read = promisify(fs.read);
+const exists = promisify(fs.exists);
+
+const LS_CACHE_FILE = `${app.getPath('userData')}/remote-versions.txt`
 
 export const validatePathToFile = async (path: string): Promise<void> => {
     if (!path) return undefined;
@@ -70,7 +76,8 @@ const parseRemoteVersions = (versions: string): TRemoteNodeVersion[] => {
                 codename: matchCodename && matchCodename[1],
                 latestLTS: !!matchLatestLTS,
             };
-        });
+        })
+        .reverse();
 }
 
 export const getCurrentNodeVersion = async (): Promise<TInvokeResponse<string>> => {
@@ -114,7 +121,11 @@ export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TLocalNode
 }
 
 export const syncRemoteNodeVersions = async (): Promise<TInvokeResponse> => {
-    const result = await nvm('ls-remote --no-colors > nvm-ls-remote.txt');
+    const result = await nvm(`ls-remote --no-colors`);
+    if (result.error) return { error: result.error };
+    const file = await open(pathResolve(LS_CACHE_FILE), 'w');
+    await write(file, result.result || '');
+    await close(file);
     storage.setItem('lastSync', Date.now());
 
     if (result.error) return { error: result.error };
@@ -128,12 +139,14 @@ export const getLastSync = async (): Promise<TInvokeResponse<number>> => {
 
 export const getRemoteNodeVersions = async (): Promise<TInvokeResponse<TRemoteNodeVersion[]>> => {
     const { result: lastSync } = await getLastSync();
-    if (!lastSync) {
-        return { error: 'No remote versions available. Please sync first.' };
+    const fileExists = await exists(pathResolve(LS_CACHE_FILE));
+    if (!lastSync || !fileExists) {
+        const syncResult = await syncRemoteNodeVersions();
+        if (syncResult.error) return { error: syncResult.error };
     }
 
     try {
-        const file = await open(pathResolve('nvm-ls-remote.txt'), 'r');
+        const file = await open(pathResolve(LS_CACHE_FILE), 'r');
         const data = await read(file);
         const versions = parseRemoteVersions(data.buffer.toString());
         return { result: versions };

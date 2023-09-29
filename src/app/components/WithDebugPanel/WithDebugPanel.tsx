@@ -26,7 +26,7 @@ export const WithDebugPanel = ({ children }: {
                             <Divider orientation="vertical" mx={2} borderLeftWidth={3} />
                         </PanelResizeHandle>
 
-                        <Panel id="sidebar" minSize={5} order={2}>
+                        <Panel id="sidebar" minSize={5} order={2} style={{ overflowY: 'auto' }}>
                             <Debug />
                         </Panel>
                     </>

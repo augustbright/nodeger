@@ -68,7 +68,7 @@ export const GeneralSettings = () => {
                                 )}
                             </InputGroup>
                             <FormErrorMessage>{props.errors.shellContext}</FormErrorMessage>
-                            <FormHelperText>Path to shell context, e.g. <Code>~/.zshrc</Code></FormHelperText>
+                            <FormHelperText>Path to shell context, e.g. <Code>/Users/username/.nvm/nvm.sh</Code></FormHelperText>
                         </FormControl>
 
                         <FormControl display='flex' alignItems='center'>
