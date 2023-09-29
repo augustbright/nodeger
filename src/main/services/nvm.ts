@@ -94,7 +94,7 @@ export const getLocalNodeVersions = async (): Promise<TInvokeResponse<TLocalNode
         const versionResponse = await getCurrentNodeVersion();
         if (versionResponse.error) return { error: versionResponse.error };
 
-        const response = await nvm('ls --no-alias');
+        const response = await nvm('ls --no-alias --no-colors');
 
         if (response.error) return { error: response.error };
         const versionsPlainList = parsePlainVersions(response.result || '');
@@ -146,12 +146,42 @@ export const getRemoteNodeVersions = async (): Promise<TInvokeResponse<TRemoteNo
 
 }
 
+export const install = async (version: string): Promise<TInvokeResponse> => {
+    try {
+        const result = await nvm(`install ${version}`);
+        if (result.error) return { error: result.error };
+        return { result: 'OK' };
+    } catch (error) {
+        if (error instanceof Error) {
+            return { error: error.message };
+        }
+        return { error: 'Unknown error.' };
+    }
+};
+
+export const uninstall = async (version: string): Promise<TInvokeResponse> => {
+    try {
+        const result = await nvm(`uninstall ${version}`);
+        if (result.error) return { error: result.error };
+        return { result: 'OK' };
+    } catch (error) {
+        if (error instanceof Error) {
+            return { error: error.message };
+        }
+        return { error: 'Unknown error.' };
+    }
+};
+
 export const nvm = async (params: string, customPath?: string): Promise<TInvokeResponse> => {
     const { nvmPath, shell, shellContext } = await getSettings();
     const path = customPath ?? nvmPath;
     if (!path) return { error: 'Path is not set.' };
 
-    const cmd = `${shellContext ? `source ${shellContext};` : ''} nvm ${params} --no-colors`;
+    const cmd = `${shellContext ? `source ${shellContext};` : ''} nvm ${params}`;
+    log({
+        message: `Executing command: ${cmd}`,
+        type: 'info',
+    });
 
     return new Promise<TInvokeResponse>((resolve) => {
         try {

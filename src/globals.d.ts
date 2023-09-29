@@ -70,6 +70,8 @@ declare const api: {
         use: (version: string) => Promise<TInvokeResponse>;
         sync: () => Promise<TInvokeResponse>;
         lastSync: () => Promise<TInvokeResponse<number>>;
+        install: (version: string) => Promise<TInvokeResponse>;
+        uninstall: (version: string) => Promise<TInvokeResponse>;
     };
     onOutput: (listener: (output: TOutput) => void) => void;
     onLog: (listener: (log: TLogMessage) => void) => void;

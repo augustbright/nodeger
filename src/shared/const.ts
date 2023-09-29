@@ -7,6 +7,8 @@ export const API = {
         USE: 'nvm.use',
         SYNC: 'nvm.sync',
         LAST_SYNC: 'nvm.last-sync',
+        INSTALL: 'nvm.install',
+        UNINSTALL: 'nvm.uninstall',
     },
     SETTINGS: {
         GET: 'get-settings',

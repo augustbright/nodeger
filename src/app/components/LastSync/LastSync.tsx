@@ -1,4 +1,4 @@
-import { Flex, IconButton, SkeletonText, Text } from "@chakra-ui/react";
+import { Flex, IconButton, Text } from "@chakra-ui/react";
 import { useLastSyncTime } from "../../hooks/useLastSyncTime";
 import { useNVMVersions } from "../../hooks/useNVMVersions";
 import { useSyncVersions } from "../../hooks/useSyncVersions";

@@ -10,7 +10,7 @@ export const App = () => {
         <Providers>
             <Stack direction={'column'} h={'100vh'} gap={0}>
                 <NavBar />
-                <Box flexGrow={1}>
+                <Box flexGrow={1} h="calc(100% - 40px - 20px)">
                     <WithDebugPanel>
                         <ContentSwitch />
                     </WithDebugPanel>

@@ -23,6 +23,8 @@ contextBridge.exposeInMainWorld('api', {
         use: (version: string) => ipcRenderer.invoke(API.NVM.USE, version),
         sync: () => ipcRenderer.invoke(API.NVM.SYNC),
         lastSync: () => ipcRenderer.invoke(API.NVM.LAST_SYNC),
+        install: (version: string) => ipcRenderer.invoke(API.NVM.INSTALL, version),
+        uninstall: (version: string) => ipcRenderer.invoke(API.NVM.UNINSTALL, version),
     },
     onOutput: (listener: (output: TOutput) => void) => {
         ipcRenderer.on(EVENTS.OPUTPUT, (_event, data) => listener(data));

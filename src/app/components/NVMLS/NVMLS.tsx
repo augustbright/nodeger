@@ -9,7 +9,7 @@ export const NVMLS = () => {
     if (!data) { return null; }
 
     return (
-        <Flex px={2} direction='column' justifyContent='flex-start' gap={3}>
+        <Flex px={2} direction='column' justifyContent='flex-start' gap={3} h="100%">
             <Flex direction='column' gap={4}>
                 <InputGroup>
                     <InputLeftElement pointerEvents='none'>
@@ -26,7 +26,7 @@ export const NVMLS = () => {
                 </Alert>
             }
 
-            <Accordion defaultIndex={[0]} allowMultiple>
+            <Accordion defaultIndex={[0]} allowMultiple h="calc(100% - 0.75rem - 40px)" overflowY='auto'>
                 <AccordionItem defaultChecked>
                     <h2>
                         <AccordionButton>
