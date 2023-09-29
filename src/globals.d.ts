@@ -64,8 +64,8 @@ declare const api: {
         validate: (settings: TSettings) => Promise<TSettingsValidation>;
     };
     nvm: {
-        lsLocal: () => Promise<TInvokeResponse<TNodeVersion[]>>;
-        lsRemote: () => Promise<TInvokeResponse<TNodeVersion[]>>;
+        lsLocal: () => Promise<TInvokeResponse<TLocalNodeVersion[]>>;
+        lsRemote: () => Promise<TInvokeResponse<TRemoteNodeVersion[]>>;
         version: () => Promise<TInvokeResponse>;
         use: (version: string) => Promise<TInvokeResponse>;
         sync: () => Promise<TInvokeResponse>;

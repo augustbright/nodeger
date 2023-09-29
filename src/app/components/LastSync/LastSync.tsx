@@ -1,30 +1,52 @@
-import { Flex, SkeletonText, Text } from "@chakra-ui/react";
+import { Flex, IconButton, SkeletonText, Text } from "@chakra-ui/react";
 import { useLastSyncTime } from "../../hooks/useLastSyncTime";
-import { useIsMutating } from "react-query";
-import { API } from "../../../shared/const";
+import { useNVMVersions } from "../../hooks/useNVMVersions";
+import { useSyncVersions } from "../../hooks/useSyncVersions";
+import { RepeatIcon } from "@chakra-ui/icons";
+import { DotLoader } from "../DotLoader/DotLoader";
 
 export const LastSync = () => {
-    const { data, isFetching, error } = useLastSyncTime();
-    const isSyncing = useIsMutating({ mutationKey: API.NVM.SYNC });
+    const { data, error } = useLastSyncTime();
+    const { isFetching: isFetchingVersions } = useNVMVersions();
+    const { mutate: sync, isLoading: isSyncing } = useSyncVersions();
+
+    let content: React.ReactNode = (
+        <>
+            <Text fontSize='xs' lineHeight='32px'>
+                Last sync was at:
+            </Text>
+            {
+                (isSyncing || isFetchingVersions) ? (
+                    <DotLoader />
+                ) : (
+                    <Text fontSize='xs' lineHeight='32px'> {data} </Text>                    
+                )
+            }
+        </>
+    )
 
     if (error) {
-        return <Text color='red.500'>
+        content = <Text color='red.500'>
             Couldn't fetch last sync time
         </Text>;
     }
 
     if (!data) {
-        return null;
+        content = null;
     }
 
     return <Flex alignItems='center' gap={3}>
-        <Text fontSize='xs' lineHeight='32px'>
-            Last sync:
-        </Text>
-        {
-            (isFetching || isSyncing)
-                ? <SkeletonText w='120px' noOfLines={1} />
-                : <Text fontSize='xs' lineHeight='32px'> {data} </Text>
-        }
+        <IconButton
+            size="sm"
+            bg="transparent"
+            aria-label='Update'
+            icon={<RepeatIcon />}
+            isLoading={isSyncing || isFetchingVersions}
+            onClick={(e) => {
+                e.stopPropagation();
+                if (!isSyncing) sync();
+            }}
+        />
+        {content}
     </Flex>;
 };
