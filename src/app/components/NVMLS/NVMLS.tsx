@@ -3,9 +3,12 @@ import { useNVMVersions } from "../../hooks/useNVMVersions";
 import { SearchIcon } from "@chakra-ui/icons";
 import { VersionsTable } from "../VersionsTable/VersionsTable";
 import { LastSync } from "../LastSync/LastSync";
+import { searchQuery as searchQueryAtom } from "../../atoms";
+import { useAtom } from "jotai";
 
 export const NVMLS = () => {
-    const { data } = useNVMVersions();
+    const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom);
+    const { data } = useNVMVersions({ searchQuery });
     if (!data) { return null; }
 
     return (
@@ -15,7 +18,12 @@ export const NVMLS = () => {
                     <InputLeftElement pointerEvents='none'>
                         <SearchIcon color='gray.300' />
                     </InputLeftElement>
-                    <Input variant='filled' placeholder='Search' />
+                    <Input
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        variant='filled'
+                        placeholder='Search'
+                    />
                 </InputGroup>
             </Flex>
             {

@@ -3,11 +3,12 @@ import { useSetCurrentNVMVersion } from "../../hooks/useSetCurrentNVMVersion";
 import { useMemo, useRef } from "react";
 import { useInstallVersion } from "../../hooks/useInstallVersion";
 import { useDeleteVersion } from "../../hooks/useDeleteVersion";
+import { VersionTitle } from "../VersionTitle/VersionTitle";
 
 export const NodeVersionRow = ({ version }: {
     version: TNodeVersion
 }) => {
-    const setCurrentVersion = useSetCurrentNVMVersion();
+    const { mutate: setCurrentVersion, isLoading: isSettingCurrentVersion } = useSetCurrentNVMVersion();
     const { mutate: install, isLoading: isInstalling } = useInstallVersion();
     const { mutate: deleteVersion, isLoading: isDeleting } = useDeleteVersion();
 
@@ -34,15 +35,7 @@ export const NodeVersionRow = ({ version }: {
                     {status}
                 </Td>
                 <Td>
-                    <Flex gap={3}>
-                        <Text fontSize='lg'>{version.id}</Text>
-                        {
-                            version.codename && <Badge variant={"subtle"}>LTS: {version.codename}</Badge>
-                        }
-                        {
-                            version.latestLTS && <Badge colorScheme="teal" variant={"subtle"}>Latest</Badge>
-                        }
-                    </Flex>
+                    <VersionTitle version={version} />
                 </Td>
                 <Td>
                     <Flex gap={3} justifyContent='flex-end'>
@@ -50,6 +43,7 @@ export const NodeVersionRow = ({ version }: {
                             !version.default && version.local && <Button
                                 variant={"outline"}
                                 size='md'
+                                isLoading={isSettingCurrentVersion}
                                 onClick={() => setCurrentVersion(version.id)}>
                                 Use
                             </Button>
@@ -66,7 +60,7 @@ export const NodeVersionRow = ({ version }: {
                         }
 
                         {
-                            version.local && <Button
+                            version.local && !version.default && <Button
                                 variant={"ghost"}
                                 colorScheme={"red"}
                                 size='md'
@@ -78,8 +72,6 @@ export const NodeVersionRow = ({ version }: {
                     </Flex>
                 </Td>
             </Tr>
-
-
 
             <AlertDialog
                 isOpen={isOpenDelete}

@@ -1,7 +1,8 @@
-import { Table, TableContainer, Tbody, Tfoot, Th, Thead, Tr } from "@chakra-ui/react";
+import { Table, TableContainer, Tbody, Th, Thead, Tr } from "@chakra-ui/react";
 import { NodeVersionRow } from "../NodeVersionRow/NodeVersionRow";
+import React from "react";
 
-export const VersionsTable = ({
+export const VersionsTable = React.memo(({
     versions
 }: {
     versions: TNodeVersion[]
@@ -26,4 +27,4 @@ export const VersionsTable = ({
             </Table>
         </TableContainer>
     );
-};
+});

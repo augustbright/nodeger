@@ -1,23 +1,34 @@
 import { useToast } from "@chakra-ui/react";
-import { useQueryClient } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { API } from "../../shared/const";
+import { getErrorMessage } from "../func/getErrorMessage";
 
 export const useSetCurrentNVMVersion = () => {
     const toast = useToast();
     const client = useQueryClient();
 
-    return async (version: string) => {
-        const { error } = await api.nvm.use(version);
+    return useMutation({
+        mutationFn: async (version: string) => {
+            const response = await api.nvm.use(version);
 
-        if (error) {
+            if (response.error) {
+                throw new Error(response.error);
+            }
+        },
+        onSuccess: (_data, version) => {
+            toast({
+                title: 'Success',
+                description: `Switched to version ${version}`,
+                status: 'success'
+            });
+            client.invalidateQueries(API.NVM.LS_LOCAL);
+        },
+        onError: (error) => {
             toast({
                 title: 'Error',
-                description: error,
+                description: getErrorMessage(error),
                 status: 'error'
             });
-            return;
         }
-
-        client.invalidateQueries(API.NVM.LS_LOCAL);
-    }
+    });
 };

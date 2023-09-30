@@ -1,4 +1,4 @@
 import { atom } from "jotai";
 
 export const debugActive = atom(false);
-export const showOnlyLocalAtom = atom(true);
+export const searchQuery = atom("");

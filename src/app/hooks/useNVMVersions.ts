@@ -1,8 +1,9 @@
 import { useQuery } from "react-query";
 import { API } from "../../shared/const";
-import { useMemo } from "react";
 
-export const useNVMVersions = () => {
+export const useNVMVersions = ({ searchQuery }: {
+    searchQuery?: string;
+} = {}) => {
     return useQuery(API.NVM.LS_LOCAL, async () => {
         const localVersions = await api.nvm.lsLocal();
         const remoteVersions = await api.nvm.lsRemote();
@@ -24,10 +25,21 @@ export const useNVMVersions = () => {
         const local = versions.filter((version) => version.local);
         const remote = versions.filter((version) => !version.local);
 
+        const current = versions.find((version) => version.default);
+
         return {
             local,
             remote,
-            error
+            error,
+            current
         }
+    }, {
+        select(data) {
+            return {
+                ...data,
+                local: data.local.filter((version) => !searchQuery || version.id.includes(searchQuery)),
+                remote: data.remote.filter((version) => !searchQuery || version.id.includes(searchQuery)),
+            };
+        },
     });
 };
