@@ -9,7 +9,7 @@ export const VersionsTable = React.memo(({
 }) => {
     return (
         <TableContainer>
-            <Table variant='simple'>
+            <Table variant='simple' size='sm'>
                 <Thead>
                     <Tr>
                         <Th>Status</Th>

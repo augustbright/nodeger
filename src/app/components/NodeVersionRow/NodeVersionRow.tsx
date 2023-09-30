@@ -42,7 +42,7 @@ export const NodeVersionRow = ({ version }: {
                         {
                             !version.default && version.local && <Button
                                 variant={"outline"}
-                                size='md'
+                                size='xs'
                                 isLoading={isSettingCurrentVersion}
                                 onClick={() => setCurrentVersion(version.id)}>
                                 Use
@@ -52,7 +52,7 @@ export const NodeVersionRow = ({ version }: {
                         {
                             !version.local && <Button
                                 variant={"outline"}
-                                size='md'
+                                size='xs'
                                 isLoading={isInstalling}
                                 onClick={() => install(version)}>
                                 Install
@@ -63,7 +63,7 @@ export const NodeVersionRow = ({ version }: {
                             version.local && !version.default && <Button
                                 variant={"ghost"}
                                 colorScheme={"red"}
-                                size='md'
+                                size='xs'
                                 isLoading={isDeleting}
                                 onClick={() => onOpenDelete()}>
                                 Delete
