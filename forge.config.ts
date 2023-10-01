@@ -12,9 +12,14 @@ import { rendererConfig } from './webpack.renderer.config';
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
+    icon: './src/assets/icons/icon', 
   },
   rebuildConfig: {},
-  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({})],
+  makers: [new MakerSquirrel({}), new MakerZIP({}, ['darwin']), new MakerRpm({}), new MakerDeb({
+    options: {
+      icon: './src/assets/icons/icon.png'
+    }
+  })],
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new WebpackPlugin({
@@ -34,6 +39,19 @@ const config: ForgeConfig = {
       },
     }),
   ],
+  publishers: [
+    {
+      name: '@electron-forge/publisher-github',
+      config: {
+        repository: {
+          owner: 'augustbright',
+          name: 'nodeger'
+        },
+        prerelease: false,
+        draft: true
+      }
+    }
+  ]
 };
 
 export default config;

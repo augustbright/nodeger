@@ -40,7 +40,7 @@ export const NodeVersionRow = ({ version }: {
                 <Td>
                     <Flex gap={3} justifyContent='flex-end'>
                         {
-                            !version.default && version.local && <Button
+                            !version.default && version.local && !isDeleting && <Button
                                 variant={"outline"}
                                 size='xs'
                                 isLoading={isSettingCurrentVersion}
@@ -65,6 +65,7 @@ export const NodeVersionRow = ({ version }: {
                                 colorScheme={"red"}
                                 size='xs'
                                 isLoading={isDeleting}
+                                isDisabled={isSettingCurrentVersion}
                                 onClick={() => onOpenDelete()}>
                                 Delete
                             </Button>
