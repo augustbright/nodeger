@@ -77,6 +77,7 @@ const parseRemoteVersions = (versions: string): TRemoteNodeVersion[] => {
                 latestLTS: !!matchLatestLTS,
             };
         })
+        .filter(({ id }) => !!id)
         .reverse();
 }
 
