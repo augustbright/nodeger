@@ -5,7 +5,6 @@ import { resolve as pathResolve } from 'path';
 import { getSettings } from './settings';
 import { sendOutput } from './output';
 import { promisify } from 'util';
-import { log } from './log';
 import { app } from 'electron';
 
 const stat = promisify(fs.stat);
@@ -192,10 +191,6 @@ export const nvm = async (params: string, customPath?: string): Promise<TInvokeR
     if (!path) return { error: 'Path is not set.' };
 
     const cmd = `${shellContext ? `source ${shellContext};` : ''} nvm ${params}`;
-    log({
-        message: `Executing command: ${cmd}`,
-        type: 'info',
-    });
 
     return new Promise<TInvokeResponse>((resolve) => {
         try {
